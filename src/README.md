@@ -1,5 +1,7 @@
 # Demystifying Asynchronous Rust
 
+(You will find an mdBook version of this book [here](https://teh-cmc.github.io/rust-async/html/), if that's more your thing.)
+
 ## Who is this book for?
 
 This book is targeted towards experienced programmers that already feel somewhat comfortable with vanilla Rust (you definitely do not need to be an "expert" though, I certainly am not) and would like to dip their toes into its async ecosystem.
