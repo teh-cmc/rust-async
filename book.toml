@@ -4,3 +4,22 @@ language = "en"
 multilingual = false
 src = "src"
 title = "Demystifying Asynchronous Rust"
+description = "Lifting the magic, one abstraction at a time"
+
+[preprocessor.links]
+renderers = ["html", "md"]
+
+[preprocessor.index]
+renderers = ["html", "md"]
+
+[output.singlepage]
+
+[output.html]
+default-theme = "ayu"
+git-repository-url = "https://github.com/teh-cmc/rust-async"
+git-repository-icon = "fa-github"
+
+[output.html.playpen]
+editable = false
+copy-js = true
+line-numbers = true
