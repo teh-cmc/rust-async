@@ -1,0 +1,6 @@
+[book]
+authors = ["Clement Rey"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Demystifying Asynchronous Rust"
