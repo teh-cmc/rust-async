@@ -790,7 +790,7 @@ The attentive reader shall notice the two extra instructions this time: the comp
 
 ### 1.2.c. Usual complications
 
-When working in single-threaded environments, closures are usually a breathe to work with. The compiler gets to do its magic and you rarely seem to get into trouble, if at all.  
+When working in single-threaded environments, closures are usually a breeze to work with. The compiler gets to do its magic and you rarely seem to get into trouble, if at all.  
 Once we get into async code, though, some concepts that are usually mostly invisible will start becoming very apparent as Rust compile-time safeties start kicking in.
 
 **Higher Ranked Trait Bounds**
