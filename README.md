@@ -511,7 +511,7 @@ If the closure needs to modify its state during execution, but doesn't need to m
 ```rust
 fn call_mut(&mut self, args: Args) -> Self::Output // `&mut self`
 ```
-Of course, if our `FnMut` closure can be called N times, then it would certainly make sense that we should be able to call it only once. Indeed, `FnMut` is a supertrait of `FnOnce` (hence `FnMut<Args>: FnOnce<Args>`).  
+Of course, if our `FnMut` closure can be called N times, then it would certainly make sense that we should be able to call it only once. Indeed, `FnOnce` is a supertrait of `FnMut` (hence `FnMut<Args>: FnOnce<Args>`).  
 This is easier to visualize with an example:
 ```rust
 fn run_once<F>(f: F) -> i32 // `f` isn't even marked as `mut`..
@@ -631,7 +631,7 @@ struct MyClosure<'a> {
 }
 ```
 Our closure only references its environment: it never modifies it nor does it ever move it somewhere else, therefore the most versatile implementation that we can provide is `Fn`, which should allow it to be run pretty much anywhere.  
-As we've seen, `Fn` is a supertrait of `FnMut` is a supertrait of `FnOnce`, and so we need to implement the entire family tree in this case:
+As we've seen, `FnOnce` is a supertrait of `FnMut` is a supertrait of `Fn`, and so we need to implement the entire family tree in this case:
 ```rust
 impl<'a> FnOnce<(i32,)> for MyClosure<'a> {
     type Output = i32;
