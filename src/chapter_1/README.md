@@ -14,7 +14,7 @@ In particular, async I/O is a very tricky beast that brings with it A) its own s
 For these reasons, I'd like to instead try and approach the matter from a different, and perhaps more familiar angle: start from the beginning with iterators and closures, and see where that takes us.  
 Of course, we'll cover async I/O when the time is right.
 
-Now I'm sure that opening a book about asynchronous Rust with a whole chapter dedicated to iterators and closures might seem like a dubious choice but, as we'll see, iterators, closures, streams & futures are all very much alike in more than one ways.  
+Now I'm sure that opening a book about asynchronous Rust with a whole chapter dedicated to iterators and closures might seem like a dubious choice but, as we'll see, iterators, closures, streams & futures are all very much alike in crucial ways.  
 In fact, I simply cannot fathom how we'd go about demystifying asynchronous Rust without first lifting all of the magic behind iterators and closures. That might just be me, though.
 
 Hence in this first chapter, we'll do just that, demystify iterators and closures:
