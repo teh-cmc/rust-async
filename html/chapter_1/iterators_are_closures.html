@@ -1,0 +1,526 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js ayu">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Iterators are closures are iterators - Demystifying Asynchronous Rust</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="Lifting the magic, one abstraction at a time">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "ayu" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
+                <ol class="chapter"><li class="expanded affix "><a href="../index.html">Introduction</a></li><li class="expanded "><a href="../chapter_1/index.html"><strong aria-hidden="true">1.</strong> Towards less blocking pastures</a></li><li><ol class="section"><li class="expanded "><a href="../chapter_1/iterators.html"><strong aria-hidden="true">1.1.</strong> Iterators</a></li><li class="expanded "><a href="../chapter_1/closures.html"><strong aria-hidden="true">1.2.</strong> Closures</a></li><li class="expanded "><a href="../chapter_1/iterators_are_closures.html" class="active"><strong aria-hidden="true">1.3.</strong> Iterators are closures are iterators</a></li><li class="expanded "><a href="../chapter_1/async_rust.html"><strong aria-hidden="true">1.4.</strong> The case for asynchronous Rust</a></li></ol></li><li class="expanded "><a href="../chapter_2/index.html"><strong aria-hidden="true">2.</strong> Chapter II</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu (default)</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Demystifying Asynchronous Rust</h1>
+
+                        <div class="right-buttons">
+                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                            <a href="https://github.com/teh-cmc/rust-async" title="Git repository" aria-label="Git repository">
+                                <i id="git-repository-button" class="fa fa-github"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2><a class="header" href="#13-iterators-are-closures-are-iterators" id="13-iterators-are-closures-are-iterators">1.3. Iterators are closures are iterators</a></h2>
+<p><em>And now for the fun part.</em></p>
+<p>Let's recap the first two sections of this chapter, in as many sentences:</p>
+<ul>
+<li>Iterators are state-machines that are implemented using a structure to keep their state and a <code>.next()</code> method that takes a mutable reference to said state (<code>&amp;mut self</code>) in order to move the machine forward.</li>
+<li>Closures are state-machines that are implemented using a structure to hold their state (i.e. their captured environment) and a <code>call_once</code>/<code>call_mut</code>/<code>call</code> method that takes said state by move/mutable reference/shared reference (respectively) in order to drive the machine forward.</li>
+</ul>
+<p>If you're thinking to yourself that these two sound similar, that's because they are.<br />
+In this section we're going to have us a little fun by digressing into these similarities.</p>
+<h3><a class="header" href="#13a-iterators-as-closures" id="13a-iterators-as-closures">1.3.a. Iterators as closures</a></h3>
+<p>Consider our <code>Range</code> iterator from earlier:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct Range&lt;T&gt; {
+    cur: T,
+    end: T,
+    incr: T,
+}
+
+impl&lt;T&gt; Range&lt;T&gt; {
+    pub fn new(start: T, end: T, incr: T) -&gt; Self {
+        Self {
+            cur: start,
+            end,
+            incr,
+        }
+    }
+}
+
+impl&lt;T&gt; Iterator for Range&lt;T&gt;
+where
+    T: std::ops::AddAssign + PartialOrd + Clone,
+{
+    type Item = T;
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+        match &amp;self.cur {
+            v if *v &lt; self.end =&gt; {
+                let ret = self.cur.clone();
+                self.cur += self.incr.clone();
+                ret.into()
+            }
+            _ =&gt; None,
+        }
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>that we used like this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut j = 1;
+for i in Range::new(1usize, 4, 1) {
+    assert_eq!(j, i);
+    j += 1;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Could we express <code>Range</code> in terms of a closure instead?<br />
+Well of course we can, what's an iterator but a <code>FnMut() -&gt; Option&lt;T&gt;</code> closure, really?</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub mod range_fn {
+    pub fn new&lt;T&gt;(mut start: T, end: T, incr: T) -&gt; impl FnMut() -&gt; Option&lt;T&gt;
+    where
+        T: std::ops::AddAssign + PartialOrd + Clone,
+    {
+        move || {
+            if start &lt; end {
+                let ret = start.clone();
+                start += incr.clone();
+                return ret.into();
+            }
+            None
+        }
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>which we can basically use the same way as an iterator:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut f = range_fn::new(1, 4, 1);
+assert_eq!(Some(1), f());
+assert_eq!(Some(2), f());
+assert_eq!(Some(3), f());
+assert_eq!(None, f());
+<span class="boring">}
+</span></code></pre></pre>
+<p>But what about combinators, you say?</p>
+<h3><a class="header" href="#13b-closure-combinators" id="13b-closure-combinators">1.3.b. Closure combinators</a></h3>
+<p>Remember our <code>Range</code> iterator could be combined with a <code>Bounds</code> iterator, allowing us to express something like the following:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut it = Bounds::new(Range::new(1usize, 20, 1), 5, 8);
+assert_eq!(Some(5), it.next());
+assert_eq!(Some(6), it.next());
+assert_eq!(Some(7), it.next());
+assert_eq!(None, it.next());
+<span class="boring">}
+</span></code></pre></pre>
+<p>We can apply the same pattern to closures: by moving ownership of the wrappee inside the state of the wrapper, we can delegate the state-machinery from the wrapper and into the wrappee.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub mod bounds_fn {
+    pub fn new&lt;T, F&gt;(mut inner: F, min: T, max: T) -&gt; impl FnMut() -&gt; Option&lt;T&gt;
+    where
+        T: PartialOrd,
+        F: FnMut() -&gt; Option&lt;T&gt;,
+    {
+        move || loop {
+            match inner() {
+                Some(v) if v &gt;= min &amp;&amp; v &lt; max =&gt; return v.into(),
+                Some(_) =&gt; {}
+                None =&gt; return None,
+            }
+        }
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Again, using our closure combinator is pretty similar to using our iterator combinator:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut f = bounds_fn::new(range_fn::new(1usize, 20, 1), 5, 8);
+assert_eq!(Some(5), f());
+assert_eq!(Some(6), f());
+assert_eq!(Some(7), f());
+assert_eq!(None, f());
+<span class="boring">}
+</span></code></pre></pre>
+<p>And, as we'd expect based on everything we've learned so far, what gets generated here is pretty much the same thing, both from a memory representation and execution model standpoints, as what got generated for the equivalent iterator combinator.</p>
+<pre><code class="language-sh">$ cargo rustc --lib -- --test -Zprint-type-sizes
+# [...]
+## Iterator combinator
+`Bounds&lt;Range&lt;usize&gt;, usize&gt;`: 40 bytes, alignment: 8 bytes
+## Closure combinator
+`[closure&lt;f:[closure&lt;start:usize, end:usize, incr:usize&gt;], min:usize, max:usize&gt;]`: 40 bytes, alignment: 8 bytes
+</code></pre>
+<p>What about extensions, though? Those were <em>the</em> true killer feature of iterator combinators!</p>
+<h3><a class="header" href="#13c-closure-extensions" id="13c-closure-extensions">1.3.c. Closure extensions</a></h3>
+<p>Remember how we were able to do this?</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut it = Range::new(1usize, 20, 1).bounds(1, 20).bounds(3, 13).bounds(5, 8);
+assert_eq!(Some(5), it.next());
+assert_eq!(Some(6), it.next());
+assert_eq!(Some(7), it.next());
+assert_eq!(None, it.next());
+<span class="boring">}
+</span></code></pre></pre>
+<p>Well closures are a trait too, aren't they? Surely we can extend it!</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>trait BoundsExtFn&lt;'a, T&gt;: FnMut() -&gt; Option&lt;T&gt;
+where
+    Self: 'a + Sized,
+    T: 'a + std::cmp::PartialOrd,
+{
+    fn bounds(self, min: T, max: T) -&gt; Box&lt;dyn FnMut() -&gt; Option&lt;T&gt; + 'a&gt; {
+        Box::new(bounds_fn::new(self, min, max))
+    }
+}
+
+impl&lt;'a, F, T&gt; BoundsExtFn&lt;'a, T&gt; for F
+where
+    F: 'a + FnMut() -&gt; Option&lt;T&gt;,
+    T: 'a + std::cmp::PartialOrd,
+{
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Ta-daaaa!</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut f = range_fn::new(1usize, 20, 1).bounds(1, 20).bounds(3, 13).bounds(5, 8);
+assert_eq!(Some(5), f());
+assert_eq!(Some(6), f());
+assert_eq!(Some(7), f());
+assert_eq!(None, f());
+<span class="boring">}
+</span></code></pre></pre>
+<p>Ok, that's not really &quot;ta-da&quot; worthy, actually. I lied.</p>
+<p>While what we've created here does indeed provide similar functional behavior as our hand-crafted combinator defined above, it has a <em>completely different</em> memory representation and execution model (not to mention that the code itself looks way more complex).<br />
+And by different, I actually mean <em>worse in every way</em>.<br />
+We've just brought heap allocations and pointer indirections upon ourselves. Oh noes.</p>
+<pre><code class="language-sh">$ cargo rustc --lib -- --test -Zprint-type-sizes
+# [...]
+`[closure&lt;f:Box&lt;dyn FnMut() -&gt; Option&lt;usize&gt;&gt;, min:usize, max:usize&gt;]`: 32 bytes, alignment: 8 bytes
+</code></pre>
+<p>All of our issues stem from the use of a <code>Box</code> there (<code>Box&lt;dyn FnMut() -&gt; Option&lt;T&gt; + 'a&gt;</code>), which begs the question: why did we reach for a <code>Box</code> in the first place?</p>
+<p>The reason is actually a limitation in Rust's type system, namely the lack of Generic Associated Types, which prevents us from expressing a trait method that returns a <code>impl FnMut() -&gt; Option&lt;T&gt;</code>, i.e. an unconstrained generic type (GATs are in fact a limited form of HKTs which, once again, are a topic for another day).</p>
+<p>But wait a minute, why didn't we face this issue back when we implemented <code>BoundsExt</code> for iterators?</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub trait BoundsExt: Iterator
+where
+    Self: Sized,
+{
+    fn bounds&lt;T&gt;(self, min: T, max: T) -&gt; Bounds&lt;Self, T&gt; {
+        Bounds::new(self, min, max)
+    }
+}
+
+impl&lt;I: Iterator&gt; BoundsExt for I {}
+<span class="boring">}
+</span></code></pre></pre>
+<p>That right here is the magical part: <code>Bounds&lt;Self, T&gt;</code>.<br />
+I.e. we never had the problem before because we were actually capable of referring to a <code>Bounds&lt;Self, T&gt;</code> by its name.</p>
+<p>Unfortunately, one of the first thing we've learned about closures is that we cannot name them; they're all different, and they're all anonymous. Thus we <em>have</em> to return a generic type here, and it certainly cannot be constrained by the caller, since they couldn't possibly name the type of a closure that doesn't even yet exist!</p>
+<p>Therefore, what we're left to work with is an unconstrained generic type to return, and an unfortunate solution to the problem: boxing the return value into a trait object, which is exactly what we did there.<br />
+Of course, in doing so we've also sacrificed any chance at monomorphization and all the good things that can come out of it: inlining, code elimination, recursive optimizations, etc...</p>
+<h3><a class="header" href="#13d-back-and-forth" id="13d-back-and-forth">1.3.d. Back and forth</a></h3>
+<p>We've shown that we can express iterators as closures and vice-versa, thus we should be able to freely turn one into the other and back again on the fly, shouldn't we?</p>
+<p>Turning an iterator into a closure is just a matter of implementing <code>FnMut</code> for <code>I: Iterator</code>, where the implementation does nothing but delegate the call to <code>Iterator::next</code>:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub fn iter_to_closure&lt;I: Iterator&gt;(inner: I) -&gt; impl FnMut() -&gt; Option&lt;I::Item&gt; {
+    // We cannot implement Fn* traits directly on `I: Iterator` because of
+    // coherence.
+    struct Iter&lt;I&gt;(I);
+
+    impl&lt;I&gt; FnOnce&lt;()&gt; for Iter&lt;I&gt;
+    where
+        I: Iterator,
+    {
+        type Output = Option&lt;I::Item&gt;;
+
+        extern &quot;rust-call&quot; fn call_once(mut self, _args: ()) -&gt; Self::Output {
+            Iterator::next(&amp;mut self.0)
+        }
+    }
+    impl&lt;I&gt; FnMut&lt;()&gt; for Iter&lt;I&gt;
+    where
+        I: Iterator,
+    {
+        extern &quot;rust-call&quot; fn call_mut(&amp;mut self, _args: ()) -&gt; Self::Output {
+            Iterator::next(&amp;mut self.0)
+        }
+    }
+
+    Iter(inner)
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Going the other way is even more straightforward:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub fn closure_to_iter&lt;T, F: FnMut() -&gt; Option&lt;T&gt;&gt;(inner: F) -&gt; impl Iterator&lt;Item = T&gt; {
+    struct Iter&lt;F&gt;(F);
+
+    impl&lt;F, T&gt; Iterator for Iter&lt;F&gt;
+    where
+        F: FnMut() -&gt; Option&lt;T&gt;,
+    {
+        type Item = T;
+
+        fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+            self.0()
+        }
+    }
+
+    Iter(inner)
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>And in fact, it seems so natural to want to express an iterator as a closure that libcore provides the exact same code via <a href="https://doc.rust-lang.org/core/iter/fn.from_fn.html"><code>core::iter::from_fn</code></a>.</p>
+<p>And, voila! From iterators to closures and back again.<br />
+No magic tricks, no hidden allocs, no nothing.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut it = Range::new(1usize, 20, 1).into_iter().bounds(5, 14);
+assert_eq!(Some(5), it.next());
+assert_eq!(Some(6), it.next());
+assert_eq!(Some(7), it.next());
+
+let mut f = iter_to_closure(it);
+assert_eq!(Some(8), f());
+assert_eq!(Some(9), f());
+assert_eq!(Some(10), f());
+
+let mut it = closure_to_iter(f);
+assert_eq!(Some(11), it.next());
+assert_eq!(Some(12), it.next());
+assert_eq!(Some(13), it.next());
+
+assert_eq!(None, it.next());
+<span class="boring">}
+</span></code></pre></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../chapter_1/closures.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../chapter_1/async_rust.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../chapter_1/closures.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../chapter_1/async_rust.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

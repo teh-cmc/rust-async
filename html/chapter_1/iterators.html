@@ -1,0 +1,432 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js ayu">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Iterators - Demystifying Asynchronous Rust</title>
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="Lifting the magic, one abstraction at a time">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "ayu" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
+                <ol class="chapter"><li class="expanded affix "><a href="../index.html">Introduction</a></li><li class="expanded "><a href="../chapter_1/index.html"><strong aria-hidden="true">1.</strong> Towards less blocking pastures</a></li><li><ol class="section"><li class="expanded "><a href="../chapter_1/iterators.html" class="active"><strong aria-hidden="true">1.1.</strong> Iterators</a></li><li class="expanded "><a href="../chapter_1/closures.html"><strong aria-hidden="true">1.2.</strong> Closures</a></li><li class="expanded "><a href="../chapter_1/iterators_are_closures.html"><strong aria-hidden="true">1.3.</strong> Iterators are closures are iterators</a></li><li class="expanded "><a href="../chapter_1/async_rust.html"><strong aria-hidden="true">1.4.</strong> The case for asynchronous Rust</a></li></ol></li><li class="expanded "><a href="../chapter_2/index.html"><strong aria-hidden="true">2.</strong> Chapter II</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu (default)</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Demystifying Asynchronous Rust</h1>
+
+                        <div class="right-buttons">
+                            <a href="../print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                            <a href="https://github.com/teh-cmc/rust-async" title="Git repository" aria-label="Git repository">
+                                <i id="git-repository-button" class="fa fa-github"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2><a class="header" href="#11-iterators" id="11-iterators">1.1. Iterators</a></h2>
+<p>An iterator is a state-machine that you can move forward by calling its <code>.next</code> method.<br />
+Doing so will simultaneously yield its current value as well as mutate it towards its next state (hence <code>next(&amp;mut self)</code>).<br />
+It's <em>that</em> simple.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub trait Iterator {
+    type Item;
+
+    /// Advances the iterator and returns the next value.
+    ///
+    /// Returns None when iteration is finished. Individual iterator
+    /// implementations may choose to resume iteration, and so calling next()
+    /// again may or may not eventually start returning Some(Item) again at some
+    /// point.
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt;;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Here's an implementation of a simple <code>Range</code> iterator that yields all the values between two <code>T</code>s:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct Range&lt;T&gt; {
+    cur: T,
+    end: T,
+    incr: T,
+}
+
+impl&lt;T&gt; Range&lt;T&gt; {
+    pub fn new(start: T, end: T, incr: T) -&gt; Self {
+        Self {
+            cur: start,
+            end,
+            incr,
+        }
+    }
+}
+
+impl&lt;T&gt; Iterator for Range&lt;T&gt;
+where
+    T: std::ops::AddAssign + PartialOrd + Clone,
+{
+    type Item = T;
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+        match &amp;self.cur {
+            v if *v &lt; self.end =&gt; {
+                let ret = self.cur.clone();
+                self.cur += self.incr.clone();
+                ret.into()
+            }
+            _ =&gt; None,
+        }
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>In action:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut j = 1;
+for i in Range::new(1usize, 4, 1) {
+    assert_eq!(j, i);
+    j += 1;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Straighforward stuff. This does demonstrate a couple important characteristics of iterators, though.</p>
+<p><strong>Laziness</strong></p>
+<p>Iterators are lazy, they don't do anything unless <em>polled</em>.<br />
+In this case the for loop is doing the polling, as it desugars to something along these lines:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut it = Range::new(10, 20, 1).into_iter();
+while let Some(i) = it.next() {
+    /* ... */
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>All the usual laziness-related goodies apply, e.g. in this specific case we never dynamically allocate anything: we can represent an arbitrarily large range of numbers without ever allocating a single byte of heap space.</p>
+<p>Similarly, one can effectively <em>cancel</em> the execution of an iterator at any time <em>between two yields</em>: you just stop polling it is all.</p>
+<p><strong>Zero magic, zero allocs</strong></p>
+<p>Our iterator is nothing more than a vanilla structure (its state) with a <code>.next</code> method defined on it.<br />
+In this example, the iterator sits on <code>main</code>'s stack, and answers to the same rules as any other struct: ownership, lifetimes, marker traits, etc.</p>
+<p>There really isn't any kind of magic going on here: no hidden allocations, no codegen, no nothing; it's as dull as it gets.</p>
+<h3><a class="header" href="#11a-combinators" id="11a-combinators">1.1.a. Combinators</a></h3>
+<p>Iterators can be defined in terms of other iterators, making it possible to <em>combine</em> (hence &quot;iterator combinators&quot;) them into arbitrarily complex state-machines by wrapping iterators into iterators into iterators.. and so on and so forth.</p>
+<p>Here's a <code>Bounds</code> combinator that makes sure our <code>Range</code> never yields results that are out of bounds:</p>
+<pre><pre class="playpen"><code class="language-rust no_run">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct Bounds&lt;I, T&gt; {
+    inner: I,
+    min: T,
+    max: T,
+}
+
+impl&lt;I, T&gt; Bounds&lt;I, T&gt; {
+    pub fn new(inner: I, min: T, max: T) -&gt; Self {
+        Self { inner, min, max }
+    }
+}
+
+impl&lt;I&gt; Iterator for Bounds&lt;I, I::Item&gt;
+where
+    I: Iterator,
+    I::Item: PartialOrd,
+{
+    type Item = I::Item;
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+        loop {
+            match self.inner.next() {
+                Some(v) if v &gt;= self.min &amp;&amp; v &lt; self.max =&gt; return v.into(),
+                Some(_) =&gt; {}
+                None =&gt; return None,
+            }
+        }
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>In action:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut it = Bounds::new(Range::new(1usize, 20, 1), 5, 8);
+assert_eq!(Some(5), it.next());
+assert_eq!(Some(6), it.next());
+assert_eq!(Some(7), it.next());
+assert_eq!(None, it.next());
+<span class="boring">}
+</span></code></pre></pre>
+<p>Once again, no magic here.<br />
+<code>Bounds</code> simply takes ownership of a <code>Range</code>, and then the wrapper (<code>Bounds</code>) is free to delegate the polling to the wrappee (<code>Range</code>), injecting its own rules in the process (i.e. filtering values, in this case).</p>
+<p>From the programmer's point-of-view, nothing changes: we get a <em>something</em> that implements the <code>Iterator</code> trait and we can poll it as needed.<br />
+Thanks to monomorphization, everything is still sitting on the stack here; we just have a bigger, self-contained struct is all:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>use std::mem::size_of_val;
+
+let it = Range::new(1usize, 20, 1).into_iter();
+assert_eq!(24, size_of_val(&amp;it));
+
+let it = Bounds::new(Range::new(1usize, 20, 1), 5,8).into_iter();
+assert_eq!(40, size_of_val(&amp;it));
+<span class="boring">}
+</span></code></pre></pre>
+<p>Random tip: <code>-Zprint-size-types</code> is a great tool to know what monomorphization has been up to:</p>
+<pre><code class="language-sh">$ cargo rustc --lib -- --test -Zprint-type-sizes
+# [...]
+`Range&lt;usize&gt;`: 24 bytes, alignment: 8 bytes
+`Bounds&lt;Range&lt;usize&gt;, usize&gt;`: 40 bytes, alignment: 8 bytes
+</code></pre>
+<p><strong>What we have so far</strong></p>
+<p>We can now build up complex state-machines by composing smaller, simpler parts.<br />
+While this is great in an of itself, one will quickly disenchant when trying to build a sufficiently complex combinator:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let it = MyCombinator1::new(MyCombinator2::new(MyCombinator3::new(MyCombinator4::new(MyCombinator5::new(MyIterator::new())))));
+<span class="boring">}
+</span></code></pre></pre>
+<p>Yikes. Enter extensions.</p>
+<h2><a class="header" href="#11b-extensions" id="11b-extensions">1.1.b. Extensions</a></h2>
+<p>Extension traits allow us to define some behavior and implement it for both local and external types (provided you respect trait coherence rules.. a topic for another day).<br />
+They come in very handy in the case of iterator combinators, as they allow us to express our compound state-machines using something akin to the familiar builder pattern.</p>
+<p>Here we define a <code>BoundsExt</code> trait and provide a default implementation for everything that is an <code>Iterator</code> (provided that their <code>Item</code>s are <code>PartialOrd</code>, of course!):</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub trait BoundsExt: Iterator
+where
+    Self: Sized,
+{
+    fn bounds&lt;T&gt;(self, min: T, max: T) -&gt; Bounds&lt;Self, T&gt; {
+        Bounds::new(self, min, max)
+    }
+}
+
+impl&lt;I: Iterator&gt; BoundsExt for I {}
+<span class="boring">}
+</span></code></pre></pre>
+<p>And just like that, we're able to express our intent in a much more natural fashion:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut it = Range::new(1usize, 20, 1).bounds(1, 20).bounds(3, 13).bounds(5, 8);
+assert_eq!(Some(5), it.next());
+assert_eq!(Some(6), it.next());
+assert_eq!(Some(7), it.next());
+assert_eq!(None, it.next());
+<span class="boring">}
+</span></code></pre></pre>
+<p>And, again, no magic in sight. This is effectively just syntactic sugar.<br />
+In fact, it's all so <em>not</em> magic that the compiler did not even realize that our combinator chain is absolute non-sense and a complete waste of resources:</p>
+<pre><code class="language-sh">$ cargo rustc --lib -- --test -Zprint-type-sizes
+# [...]
+`Bounds&lt;Bounds&lt;Bounds&lt;Range&lt;usize&gt;, usize&gt;, usize&gt;, usize&gt;`: 72 bytes, alignment: 8 bytes
+</code></pre>
+<p>How could it? It's just blindly monomorphizing structs inside of other structs, that's all there is to it!</p>
+<p><strong>What we have so far</strong></p>
+<p>We can now build up complex state-machines by composing them from smaller, simpler parts... and what's more, we can even do it in an expressive, readable and maintainable way.</p>
+<p>Still, if we had to implement an iterator combinator from scratch everytime we wanted to achieve a slightly different behavior for our overall state-machine, things would get very tedious, very fast; which is why iterators are almost always used in tandem with their close friends, closures.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../chapter_1/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../chapter_1/closures.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="../chapter_1/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="../chapter_1/closures.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

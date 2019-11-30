@@ -1,0 +1,1507 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js ayu">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Demystifying Asynchronous Rust</title>
+        
+        <meta name="robots" content="noindex" />
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="Lifting the magic, one abstraction at a time">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "ayu" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div id="sidebar-scrollbox" class="sidebar-scrollbox">
+                <ol class="chapter"><li class="expanded affix "><a href="index.html">Introduction</a></li><li class="expanded "><a href="chapter_1/index.html"><strong aria-hidden="true">1.</strong> Towards less blocking pastures</a></li><li><ol class="section"><li class="expanded "><a href="chapter_1/iterators.html"><strong aria-hidden="true">1.1.</strong> Iterators</a></li><li class="expanded "><a href="chapter_1/closures.html"><strong aria-hidden="true">1.2.</strong> Closures</a></li><li class="expanded "><a href="chapter_1/iterators_are_closures.html"><strong aria-hidden="true">1.3.</strong> Iterators are closures are iterators</a></li><li class="expanded "><a href="chapter_1/async_rust.html"><strong aria-hidden="true">1.4.</strong> The case for asynchronous Rust</a></li></ol></li><li class="expanded "><a href="chapter_2/index.html"><strong aria-hidden="true">2.</strong> Chapter II</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu (default)</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Demystifying Asynchronous Rust</h1>
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                            <a href="https://github.com/teh-cmc/rust-async" title="Git repository" aria-label="Git repository">
+                                <i id="git-repository-button" class="fa fa-github"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#demystifying-asynchronous-rust" id="demystifying-asynchronous-rust">Demystifying Asynchronous Rust</a></h1>
+<p>(You will find an mdBook version of this book <a href="https://teh-cmc.github.io/rust-async/html/">here</a>, if that's more your thing.)</p>
+<h2><a class="header" href="#who-is-this-book-for" id="who-is-this-book-for">Who is this book for?</a></h2>
+<p>This book is targeted towards experienced programmers that already feel somewhat comfortable with vanilla Rust (you definitely do not need to be an &quot;expert&quot; though, I certainly am not) and would like to dip their toes into its async ecosystem.</p>
+<p>As the title indicates, this is not so much a book about <em>how to use async Rust</em> as much as it is about trying to build a solid understanding of how it all works under the hood. From there, efficient usage should come naturally.<br />
+As such, we'll try to answer the usual fundamental questions that arise from any piece of sufficiently complex technology:</p>
+<ul>
+<li>How and why did we get to this?</li>
+<li>What are the layers that make up the stack?</li>
+<li>What are their respective roles?</li>
+<li>How and why do they work the way they do?</li>
+<li>How do they fit together?</li>
+<li>What are the upsides &amp; drawbacks of this approach?</li>
+<li>What are the semantics of the overall execution model?</li>
+<li>How is everything represented in memory?</li>
+<li>Etc...</li>
+</ul>
+<p>On our way to answering all of those, we will encounter lots and lots of abstractions that will look like complete magic at first.<br />
+We won't hesitate to wander off the main road and take as long a detour as needed, until we've successfully suppressed every last bit of hidden magic.<br />
+Digression will be the norm here, not the exception.</p>
+<p>My hope is that, after reading this book, one would be able to A) dig into any arbitrarily complex async codebase and B) decipher any error message that the compiler might throw at them.</p>
+<h2><a class="header" href="#why-this-book-when-there-already-is-insert_name" id="why-this-book-when-there-already-is-insert_name">Why this book when there already is &lt;insert_name&gt;?</a></h2>
+<p><a href="https://rust-lang.github.io/async-book/01_getting_started/01_chapter.html">Asynchronous Programming in Rust</a> &amp; <a href="https://book.async.rs/">Async programming in Rust with async-std</a> are two examples of great upcoming resources to learn about Rust's asynchronous stack, and I'd highly suggest that you read through them in addition to this book.</p>
+<p>That being said, there are several reasons that have pushed me to write this material on top of what already exists:</p>
+<ul>
+<li>First, I am learning myself, and writing these notes has helped me greatly in processing the ridiculous amount of information one has to digest to fully comprehend this stack. Might as well share them while I'm it.</li>
+<li>Second, I feel like there definitely is value to be had, as a community, in having the same subject covered from different angles. The approach taken by this book should hopefully be unique enough to warrant its own text.</li>
+<li>And last but not least, who doesn't want to be writing about Rust these days?</li>
+</ul>
+<h2><a class="header" href="#can-i-help" id="can-i-help">Can I help?</a></h2>
+<p>Yep, you sure can.</p>
+<p>I am not an async Rust expert by any means. I'm not even a Rust expert to begin with.<br />
+There will be errors, misconceptions, inaccuracies and other awful, awful things in this book.<br />
+Please report them via Github's issues.</p>
+<h1><a class="header" href="#1-towards-less-blocking-pastures" id="1-towards-less-blocking-pastures">1. Towards less blocking pastures</a></h1>
+<pre><code class="language-ignore">last-edited: 2019-11-11
+rustc-version: rustc 1.40.0-nightly (b520af6fd 2019-11-03)
+</code></pre>
+<p>So what's the deal here? Why do we need asynchronous Rust in the first place?</p>
+<p>In my experience, more often than not, the first answers to come up are along the lines of &quot;to workaround the limitations of synchronous I/O&quot;.<br />
+I'm not a big fan of this answer; while async I/O is undoubtedly the poster child of all async applications, I reckon it is still just that: <em>an</em> application, out of many.</p>
+<p>In particular, async I/O is a very tricky beast that brings with it A) its own set of very specific problems and B) a gazillon of moving pieces that have nothing to do with Rust's async primitives per-se.<br />
+For these reasons, I'd like to instead try and approach the matter from a different, and perhaps more familiar angle: start from the beginning with iterators and closures, and see where that takes us.<br />
+Of course, we'll cover async I/O when the time is right.</p>
+<p>Now I'm sure that opening a book about asynchronous Rust with a whole chapter dedicated to iterators and closures might seem like a dubious choice but, as we'll see, iterators, closures, streams &amp; futures are all very much alike in crucial ways.<br />
+In fact, I simply cannot fathom how we'd go about demystifying asynchronous Rust without first lifting all of the magic behind iterators and closures. That might just be me, though.</p>
+<p>Hence in this first chapter, we'll do just that, demystify iterators and closures:</p>
+<ul>
+<li>What they are and what they're not.</li>
+<li>Their memory representation and execution model.</li>
+<li>Their interesting similarities.</li>
+<li>And last but not least: why would we need and/or want something else to begin with?</li>
+</ul>
+<h2><a class="header" href="#11-iterators" id="11-iterators">1.1. Iterators</a></h2>
+<p>An iterator is a state-machine that you can move forward by calling its <code>.next</code> method.<br />
+Doing so will simultaneously yield its current value as well as mutate it towards its next state (hence <code>next(&amp;mut self)</code>).<br />
+It's <em>that</em> simple.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub trait Iterator {
+    type Item;
+
+    /// Advances the iterator and returns the next value.
+    ///
+    /// Returns None when iteration is finished. Individual iterator
+    /// implementations may choose to resume iteration, and so calling next()
+    /// again may or may not eventually start returning Some(Item) again at some
+    /// point.
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt;;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Here's an implementation of a simple <code>Range</code> iterator that yields all the values between two <code>T</code>s:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct Range&lt;T&gt; {
+    cur: T,
+    end: T,
+    incr: T,
+}
+
+impl&lt;T&gt; Range&lt;T&gt; {
+    pub fn new(start: T, end: T, incr: T) -&gt; Self {
+        Self {
+            cur: start,
+            end,
+            incr,
+        }
+    }
+}
+
+impl&lt;T&gt; Iterator for Range&lt;T&gt;
+where
+    T: std::ops::AddAssign + PartialOrd + Clone,
+{
+    type Item = T;
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+        match &amp;self.cur {
+            v if *v &lt; self.end =&gt; {
+                let ret = self.cur.clone();
+                self.cur += self.incr.clone();
+                ret.into()
+            }
+            _ =&gt; None,
+        }
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>In action:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut j = 1;
+for i in Range::new(1usize, 4, 1) {
+    assert_eq!(j, i);
+    j += 1;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Straighforward stuff. This does demonstrate a couple important characteristics of iterators, though.</p>
+<p><strong>Laziness</strong></p>
+<p>Iterators are lazy, they don't do anything unless <em>polled</em>.<br />
+In this case the for loop is doing the polling, as it desugars to something along these lines:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut it = Range::new(10, 20, 1).into_iter();
+while let Some(i) = it.next() {
+    /* ... */
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>All the usual laziness-related goodies apply, e.g. in this specific case we never dynamically allocate anything: we can represent an arbitrarily large range of numbers without ever allocating a single byte of heap space.</p>
+<p>Similarly, one can effectively <em>cancel</em> the execution of an iterator at any time <em>between two yields</em>: you just stop polling it is all.</p>
+<p><strong>Zero magic, zero allocs</strong></p>
+<p>Our iterator is nothing more than a vanilla structure (its state) with a <code>.next</code> method defined on it.<br />
+In this example, the iterator sits on <code>main</code>'s stack, and answers to the same rules as any other struct: ownership, lifetimes, marker traits, etc.</p>
+<p>There really isn't any kind of magic going on here: no hidden allocations, no codegen, no nothing; it's as dull as it gets.</p>
+<h3><a class="header" href="#11a-combinators" id="11a-combinators">1.1.a. Combinators</a></h3>
+<p>Iterators can be defined in terms of other iterators, making it possible to <em>combine</em> (hence &quot;iterator combinators&quot;) them into arbitrarily complex state-machines by wrapping iterators into iterators into iterators.. and so on and so forth.</p>
+<p>Here's a <code>Bounds</code> combinator that makes sure our <code>Range</code> never yields results that are out of bounds:</p>
+<pre><pre class="playpen"><code class="language-rust no_run">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct Bounds&lt;I, T&gt; {
+    inner: I,
+    min: T,
+    max: T,
+}
+
+impl&lt;I, T&gt; Bounds&lt;I, T&gt; {
+    pub fn new(inner: I, min: T, max: T) -&gt; Self {
+        Self { inner, min, max }
+    }
+}
+
+impl&lt;I&gt; Iterator for Bounds&lt;I, I::Item&gt;
+where
+    I: Iterator,
+    I::Item: PartialOrd,
+{
+    type Item = I::Item;
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+        loop {
+            match self.inner.next() {
+                Some(v) if v &gt;= self.min &amp;&amp; v &lt; self.max =&gt; return v.into(),
+                Some(_) =&gt; {}
+                None =&gt; return None,
+            }
+        }
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>In action:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut it = Bounds::new(Range::new(1usize, 20, 1), 5, 8);
+assert_eq!(Some(5), it.next());
+assert_eq!(Some(6), it.next());
+assert_eq!(Some(7), it.next());
+assert_eq!(None, it.next());
+<span class="boring">}
+</span></code></pre></pre>
+<p>Once again, no magic here.<br />
+<code>Bounds</code> simply takes ownership of a <code>Range</code>, and then the wrapper (<code>Bounds</code>) is free to delegate the polling to the wrappee (<code>Range</code>), injecting its own rules in the process (i.e. filtering values, in this case).</p>
+<p>From the programmer's point-of-view, nothing changes: we get a <em>something</em> that implements the <code>Iterator</code> trait and we can poll it as needed.<br />
+Thanks to monomorphization, everything is still sitting on the stack here; we just have a bigger, self-contained struct is all:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>use std::mem::size_of_val;
+
+let it = Range::new(1usize, 20, 1).into_iter();
+assert_eq!(24, size_of_val(&amp;it));
+
+let it = Bounds::new(Range::new(1usize, 20, 1), 5,8).into_iter();
+assert_eq!(40, size_of_val(&amp;it));
+<span class="boring">}
+</span></code></pre></pre>
+<p>Random tip: <code>-Zprint-size-types</code> is a great tool to know what monomorphization has been up to:</p>
+<pre><code class="language-sh">$ cargo rustc --lib -- --test -Zprint-type-sizes
+# [...]
+`Range&lt;usize&gt;`: 24 bytes, alignment: 8 bytes
+`Bounds&lt;Range&lt;usize&gt;, usize&gt;`: 40 bytes, alignment: 8 bytes
+</code></pre>
+<p><strong>What we have so far</strong></p>
+<p>We can now build up complex state-machines by composing smaller, simpler parts.<br />
+While this is great in an of itself, one will quickly disenchant when trying to build a sufficiently complex combinator:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let it = MyCombinator1::new(MyCombinator2::new(MyCombinator3::new(MyCombinator4::new(MyCombinator5::new(MyIterator::new())))));
+<span class="boring">}
+</span></code></pre></pre>
+<p>Yikes. Enter extensions.</p>
+<h2><a class="header" href="#11b-extensions" id="11b-extensions">1.1.b. Extensions</a></h2>
+<p>Extension traits allow us to define some behavior and implement it for both local and external types (provided you respect trait coherence rules.. a topic for another day).<br />
+They come in very handy in the case of iterator combinators, as they allow us to express our compound state-machines using something akin to the familiar builder pattern.</p>
+<p>Here we define a <code>BoundsExt</code> trait and provide a default implementation for everything that is an <code>Iterator</code> (provided that their <code>Item</code>s are <code>PartialOrd</code>, of course!):</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub trait BoundsExt: Iterator
+where
+    Self: Sized,
+{
+    fn bounds&lt;T&gt;(self, min: T, max: T) -&gt; Bounds&lt;Self, T&gt; {
+        Bounds::new(self, min, max)
+    }
+}
+
+impl&lt;I: Iterator&gt; BoundsExt for I {}
+<span class="boring">}
+</span></code></pre></pre>
+<p>And just like that, we're able to express our intent in a much more natural fashion:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut it = Range::new(1usize, 20, 1).bounds(1, 20).bounds(3, 13).bounds(5, 8);
+assert_eq!(Some(5), it.next());
+assert_eq!(Some(6), it.next());
+assert_eq!(Some(7), it.next());
+assert_eq!(None, it.next());
+<span class="boring">}
+</span></code></pre></pre>
+<p>And, again, no magic in sight. This is effectively just syntactic sugar.<br />
+In fact, it's all so <em>not</em> magic that the compiler did not even realize that our combinator chain is absolute non-sense and a complete waste of resources:</p>
+<pre><code class="language-sh">$ cargo rustc --lib -- --test -Zprint-type-sizes
+# [...]
+`Bounds&lt;Bounds&lt;Bounds&lt;Range&lt;usize&gt;, usize&gt;, usize&gt;, usize&gt;`: 72 bytes, alignment: 8 bytes
+</code></pre>
+<p>How could it? It's just blindly monomorphizing structs inside of other structs, that's all there is to it!</p>
+<p><strong>What we have so far</strong></p>
+<p>We can now build up complex state-machines by composing them from smaller, simpler parts... and what's more, we can even do it in an expressive, readable and maintainable way.</p>
+<p>Still, if we had to implement an iterator combinator from scratch everytime we wanted to achieve a slightly different behavior for our overall state-machine, things would get very tedious, very fast; which is why iterators are almost always used in tandem with their close friends, closures.</p>
+<h2><a class="header" href="#12-closures" id="12-closures">1.2. Closures</a></h2>
+<p>While iterators are pretty straightforward both from a usage and an implementation standpoint, closures are anything but.<br />
+In fact, I'd argue they're one of the most complex pieces of &quot;standard&quot; synchronous Rust.<br />
+Their very expressive nature, thanks to a lot of magical sugar exposed by the compiler, make them a prime tool to push the type system into very complex corners, whether voluntarily.. or not.</p>
+<p>Closures also happen to be the cornerstone of any serious asynchronous codebase, where their incidental complexity tends to skyrocket as a multitude of issues specific to asynchronous &amp; multi-threaded code join in on the party.</p>
+<h3><a class="header" href="#12a-a-better-bounds" id="12a-a-better-bounds">1.2.a. A better <code>Bounds</code></a></h3>
+<p>We'll kick off this section by turning our <code>Bounds</code> filter into a filter of.. well, anything, really:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct Filter&lt;I, P&gt; {
+    inner: I,
+    predicate: P,
+}
+
+impl&lt;I, P&gt; Filter&lt;I, P&gt; {
+    pub fn new(inner: I, predicate: P) -&gt; Self {
+        Self { inner, predicate }
+    }
+}
+
+impl&lt;I, P&gt; Iterator for Filter&lt;I, P&gt;
+where
+    I: Iterator,
+    P: FnMut(&amp;I::Item) -&gt; bool,
+{
+    type Item = I::Item;
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+        loop {
+            match self.inner.next() {
+                Some(v) if (self.predicate)(&amp;v) =&gt; return v.into(),
+                Some(_) =&gt; {}
+                None =&gt; return None,
+            }
+        }
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Might as well provide an extension for it too:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub trait FilterExt: Iterator
+where
+    Self: Sized,
+{
+    fn filter_with&lt;P&gt;(self, predicate: P) -&gt; Filter&lt;Self, P&gt;
+    where
+        P: FnMut(&amp;Self::Item) -&gt; bool,
+    {
+        Filter::new(self, predicate)
+    }
+}
+
+impl&lt;I: Iterator&gt; FilterExt for I {}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Lo and behold:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut it = Range::new(1usize, 20, 1).filter_with(|&amp;v| v &gt;= 5 &amp;&amp; v &lt; 8);
+assert_eq!(Some(5), it.next());
+assert_eq!(Some(6), it.next());
+assert_eq!(Some(7), it.next());
+assert_eq!(None, it.next());
+<span class="boring">}
+</span></code></pre></pre>
+<p>Yep, that does it.</p>
+<p>So that's nice and all but.. how does our final state-machine ends up being implemented?</p>
+<pre><code class="language-sh">$ cargo rustc --lib -- --test -Zprint-type-sizes
+# [...]
+`Filter&lt;Range&lt;usize&gt;, [closure]&gt;`: 24 bytes, alignment: 8 bytes
+`Range&lt;usize&gt;`: 24 bytes, alignment: 8 bytes
+</code></pre>
+<p>Wait, wat? How come a monomorphized <code>Filter&lt;Range&lt;usize&gt;, &lt;[closure]&gt;&gt;</code> is the same size as a <code>Range&lt;usize&gt;</code>?</p>
+<p>The only way this is possible is if storing our closure costs a whopping 0 byte which.. doesn't seem plausible?<br />
+Let's take a minute to try and understand what's going on here.</p>
+<h3><a class="header" href="#12b-whats-a-closure-anyway" id="12b-whats-a-closure-anyway">1.2.b. What's a closure, anyway?</a></h3>
+<p>A closure is nothing but a structure (its captured environment) that implements one (or more) trait from the <code>Fn*</code> family of traits (<code>FnOnce</code>, <code>FnMut</code> and <code>Fn</code>):</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub trait FnOnce&lt;Args&gt; {
+    type Output;
+    extern &quot;rust-call&quot; fn call_once(self, args: Args) -&gt; Self::Output;
+}
+
+pub trait FnMut&lt;Args&gt;: FnOnce&lt;Args&gt; {
+    extern &quot;rust-call&quot; fn call_mut(&amp;mut self, args: Args) -&gt; Self::Output;
+}
+
+pub trait Fn&lt;Args&gt;: FnMut&lt;Args&gt; {
+    extern &quot;rust-call&quot; fn call(&amp;self, args: Args) -&gt; Self::Output;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>What that structure looks like will vary depending on the environment that the closure captures.<br />
+For that reason, every closure has a different type (!), and every closure requires a proper structure declaration in order to carry its state.<br />
+Obviously, having to manually declare a proper definition for your closure's captured state every time would be way too cumbersome, to the point of rendering closures completely useless.</p>
+<p>To cope with that, the compiler automatically generates an appropriate anonymous structure every time you create a closure.<br />
+Consider e.g. the following code:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let a = 42;
+let b = 100;
+let f = |v: i32| v + a + b;
+<span class="boring">}
+</span></code></pre></pre>
+<p>Behind the scenes, the compiler will generate something along these lines to store the state of the closure:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct __anonymous_e3b0105&lt;'a&gt; {
+    a: &amp;'a i32,
+    b: &amp;'a i32,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Now, if we instead had specified that we wanted to <em>move</em> (i.e. take ownership of) the captured variables into the closure's state rather than just keep references to them, i.e. this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let a = 42;
+let b = 100;
+let f = move |v: i32| v + a + b;
+<span class="boring">}
+</span></code></pre></pre>
+<p>would then turn into this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct __anonymous_e3b0105 {
+    a: i32,
+    b: i32,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Don't take my word for it, ask the compiler:</p>
+<pre><code class="language-sh">$ cargo rustc --lib -- --test -Zprint-type-sizes
+# [...]
+`[closure&lt;a:&amp;i32, b:&amp;i32&gt;]`: 16 bytes ## let f = |v: i32| v + a + b;
+`[closure&lt;a:i32, b:i32&gt;]`: 8 bytes ## let f = move |v: i32| v + a + b;
+</code></pre>
+<p>And so that covers the issue of generating an appropriate structure to hold the state (or captured environment) of the closure.<br />
+What about implementing <code>FnOnce</code>/<code>FnMut</code>/<code>Fn</code> on that generated structure, though?</p>
+<p>Similarly, manually providing the right <code>Fn*</code> trait(s) implementations for each and every closure would be unmanageable, and so, once again, the compiler got our backs and does it for us.<br />
+To see what these implementations might look like, we could either A) have a look at the generated IR and/or assembly, or better yet, B) handcraft our own closure out of thin air.</p>
+<p>Let's go with option B.</p>
+<h3><a class="header" href="#12c-handcrafted-closures" id="12c-handcrafted-closures">1.2.c. Handcrafted closures</a></h3>
+<p>Remember we had this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let a = 42;
+let b = 100;
+let f = |v: i32| v + a + b;
+<span class="boring">}
+</span></code></pre></pre>
+<p>Now what we'd like to do is to implement <code>f</code> without any help from the compiler.</p>
+<p>First, we need to store our state somewhere. In this case, the capture is made by reference and so our structure should reflect that:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct MyClosure&lt;'a&gt; {
+    a: &amp;'a i32,
+    b: &amp;'a i32,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Then, we need to implement the right <code>Fn*</code> trait(s). This part is a bit trickier.</p>
+<hr />
+<h3><a class="header" href="#aside-the-many-many-faces-of-closures" id="aside-the-many-many-faces-of-closures">Aside: The many, many faces of Closures</a></h3>
+<p>When you create a closure, the compiler will always try to implement the most versatile of all the <code>Fn*</code> traits that it can, i.e. the trait that will allow you to use the closure in as many situations as possible.<br />
+Whether or not a <code>Fn*</code> trait can be implemented depends solely on how the closure interacts with its state.</p>
+<p><strong><code>FnOnce</code></strong></p>
+<p>If the closure moves anything out of its state, then its state (i.e. <code>self</code>) will have to be <em>consumed</em> to perform the call, in which case the only trait that it can implement is <code>FnOnce</code>:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>fn call_once(self, args: Args) -&gt; Self::Output // `self`
+<span class="boring">}
+</span></code></pre></pre>
+<p>/!\ A common misconception is that whether a closure is or isn't <code>FnOnce</code> has anything to do with the use of <code>move</code>. It does <em><strong>not</strong></em>.</p>
+<p>This closure is <code>Fn</code>, as demonstrated by the multiple calls to it:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let a = 42;
+let b = 100;
+let f: &amp;dyn Fn(i32) -&gt; i32 = &amp;|v: i32| v + a + b; // Compiles!
+assert_eq!(150, f(8)); // really `Fn::call(&amp;f, (8,))`
+assert_eq!(150, f(8)); // really `Fn::call(&amp;f, (8,))`
+assert_eq!(150, f(8)); // really `Fn::call(&amp;f, (8,))`
+<span class="boring">}
+</span></code></pre></pre>
+<p>And so is this one:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let a = 42;
+let b = 100;
+let f: &amp;dyn Fn(i32) -&gt; i32 = &amp;move |v: i32| v + a + b; // Compiles still!
+assert_eq!(150, f(8)); // really `Fn::call(&amp;f, (8,))`
+assert_eq!(150, f(8)); // really `Fn::call(&amp;f, (8,))`
+assert_eq!(150, f(8)); // really `Fn::call(&amp;f, (8,))`
+<span class="boring">}
+</span></code></pre></pre>
+<p>It doesn't matter that the second closure moves <code>a</code> &amp; <code>b</code> into its state (well it certainly matters to the enclosing scope, which can't refer to these variables anymore, but that's besides the point).</p>
+<p>What matters is how the closure interacts with its state when it gets called.<br />
+In the example above, that interaction is just a read through a reference, and so a shared reference to the state (i.e. <code>&amp;self</code>) is enough to perform the call: the compiler makes sure that this closure is <code>Fn</code>.</p>
+<p>Now if you were to do this on the other hand..:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct MyNonCopyType(i32);
+let a = MyNonCopyType(42);
+let b = MyNonCopyType(100);
+let f = |v: i32| {
+    let ret = v + a.0 + b.0;
+    drop(a);
+    ret
+};
+assert_eq!(150, f(8)); // really `FnOnce::call_once(f, (8,))`
+// assert_eq!(150, f(8)); // Won't compile: value used after move
+<span class="boring">}
+</span></code></pre></pre>
+<p>Now that's a big no-no. <code>drop(a)</code> moves <code>a</code> out of the closure's state, and so the only way to perform the call is to consume its state (i.e. <code>self</code>). The compiler makes sure that this closure is <code>FnOnce</code>, and thus uncommenting the second call won't compile.<br />
+Notice that we're even capturing <code>a</code> &amp; <code>b</code> by reference in this case and it doesn't matter, because this has nothing to do with the use of <code>move</code>!</p>
+<p><strong><code>FnMut</code></strong></p>
+<p>If the closure needs to modify its state during execution, but doesn't need to move anything out of it, then it's gonna need a mutable reference to <code>self</code> to perform the call; i.e. it implements <code>FnMut</code>:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>fn call_mut(&amp;mut self, args: Args) -&gt; Self::Output // `&amp;mut self`
+<span class="boring">}
+</span></code></pre></pre>
+<p>Of course, if our <code>FnMut</code> closure can be called N times, then it would certainly make sense that we should be able to call it only once. Indeed, <code>FnMut</code> is a supertrait of <code>FnOnce</code> (hence <code>FnMut&lt;Args&gt;: FnOnce&lt;Args&gt;</code>).<br />
+This is easier to visualize with an example:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>fn run_once&lt;F&gt;(f: F) -&gt; i32 // `f` isn't even marked as `mut`..
+where
+    F: FnOnce() -&gt; i32,
+{
+    f() // ..but `self` is really `&amp;mut self`, because tricks!
+}
+
+fn run_mut&lt;F&gt;(mut f: F) -&gt; i32
+where
+    F: FnMut() -&gt; i32,
+{
+    f()
+}
+
+let mut a = 10;
+let mut fmut = || {
+    a += 1;
+    a
+};
+
+assert_eq!(11, run_once(&amp;mut fmut));
+assert_eq!(12, run_once(&amp;mut fmut));
+assert_eq!(13, run_mut(&amp;mut fmut));
+assert_eq!(14, run_mut(&amp;mut fmut));
+<span class="boring">}
+</span></code></pre></pre>
+<p>And the reason why this works is because of this little jewel in libcore:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>#[stable(feature = &quot;rust1&quot;, since = &quot;1.0.0&quot;)]
+impl&lt;A, F: ?Sized&gt; FnOnce&lt;A&gt; for &amp;mut F
+where
+    F: FnMut&lt;A&gt;,
+{
+    type Output = F::Output;
+    extern &quot;rust-call&quot; fn call_once(self, args: A) -&gt; F::Output {
+        (*self).call_mut(args)
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p><strong><code>Fn</code></strong></p>
+<p>Finally, if the closure just reads from its environment without ever modifying it, all it's gonna need to perform a call is a shared refence to <code>self</code>: it implements <code>Fn</code>.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>fn call(&amp;self, args: Args) -&gt; Self::Output // `&amp;self`
+<span class="boring">}
+</span></code></pre></pre>
+<p>Once again, no reason why a <code>Fn</code> closure couldn't behave as a <code>FnMut</code>; if a closure can be executed N times while modifying its state, it certainly can be executed N times without modifying it (hence <code>Fn&lt;Args&gt;: FnMut&lt;Args&gt;</code>).<br />
+And, as we know, if a closure is <code>FnMut</code>, then it is <code>FnOnce</code> too:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>fn run_once&lt;F&gt;(f: F, b: i32) -&gt; i32
+where
+    F: FnOnce(i32) -&gt; i32,
+{
+    f(b)
+}
+
+fn run_mut&lt;F&gt;(mut f: F, b: i32) -&gt; i32
+where
+    F: FnMut(i32) -&gt; i32,
+{
+    f(b)
+}
+
+fn run&lt;F&gt;(f: F, b: i32) -&gt; i32
+where
+    F: Fn(i32) -&gt; i32,
+{
+    f(b)
+}
+
+let a = 10;
+let f = |b: i32| a + b;
+
+assert_eq!(52, run_once(&amp;f, 42));
+assert_eq!(52, run_once(&amp;f, 42));
+assert_eq!(52, run_mut(&amp;f, 42));
+assert_eq!(52, run_mut(&amp;f, 42));
+assert_eq!(52, run(&amp;f, 42));
+assert_eq!(52, run(&amp;f, 42));
+<span class="boring">}
+</span></code></pre></pre>
+<p>Once again, we can thank libcore for this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>#[stable(feature = &quot;rust1&quot;, since = &quot;1.0.0&quot;)]
+impl&lt;A, F: ?Sized&gt; FnOnce&lt;A&gt; for &amp;F
+where
+    F: Fn&lt;A&gt;,
+{
+    type Output = F::Output;
+
+    extern &quot;rust-call&quot; fn call_once(self, args: A) -&gt; F::Output {
+        (*self).call(args)
+    }
+}
+
+#[stable(feature = &quot;rust1&quot;, since = &quot;1.0.0&quot;)]
+impl&lt;A, F: ?Sized&gt; FnMut&lt;A&gt; for &amp;F
+where
+    F: Fn&lt;A&gt;,
+{
+    extern &quot;rust-call&quot; fn call_mut(&amp;mut self, args: A) -&gt; F::Output {
+        (**self).call(args)
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>And that concludes our aside regarding the <code>Fn*</code> family of traits.</p>
+<hr />
+<p>Back to our original business.<br />
+We were wondering how to implement the right <code>Fn*</code> traits for our closure's state:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>struct MyClosure&lt;'a&gt; {
+    a: &amp;'a i32,
+    b: &amp;'a i32,
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Our closure only references its environment: it never modifies it nor does it ever move it somewhere else, therefore the most versatile implementation that we can provide is <code>Fn</code>, which should allow it to be run pretty much anywhere.<br />
+As we've seen, <code>Fn</code> is a supertrait of <code>FnMut</code> is a supertrait of <code>FnOnce</code>, and so we need to implement the entire family tree in this case:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>impl&lt;'a&gt; FnOnce&lt;(i32,)&gt; for MyClosure&lt;'a&gt; {
+    type Output = i32;
+
+    extern &quot;rust-call&quot; fn call_once(self, _args: (i32,)) -&gt; Self::Output {
+        unreachable!()
+    }
+}
+
+impl&lt;'a&gt; FnMut&lt;(i32,)&gt; for MyClosure&lt;'a&gt; {
+    extern &quot;rust-call&quot; fn call_mut(&amp;mut self, _args: (i32,)) -&gt; Self::Output {
+        unreachable!()
+    }
+}
+
+impl&lt;'a&gt; Fn&lt;(i32,)&gt; for MyClosure&lt;'a&gt; {
+    extern &quot;rust-call&quot; fn call(&amp;self, (v,): (i32,)) -&gt; Self::Output {
+        v + self.a + self.b
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Lo and behold, we've got ourselves a closure:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let a = 42;
+let b = 100;
+let f = MyClosure { a: &amp;a, b: &amp;b };
+assert_eq!(150, f(8)); // really `Fn::call(&amp;f, (8,))`
+assert_eq!(150, f(8)); // really `Fn::call(&amp;f, (8,))`
+assert_eq!(150, f(8)); // really `Fn::call(&amp;f, (8,))`
+<span class="boring">}
+</span></code></pre></pre>
+<p>So that's great and all, but it still doesn't explain why this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut it = Range::new(1usize, 20, 1).filter_with(|&amp;v| v &gt;= 5 &amp;&amp; v &lt; 8);
+assert_eq!(Some(5), it.next());
+assert_eq!(Some(6), it.next());
+assert_eq!(Some(7), it.next());
+assert_eq!(None, it.next());
+<span class="boring">}
+</span></code></pre></pre>
+<p>yields this:</p>
+<pre><code>`Filter&lt;Range&lt;usize&gt;, [closure]&gt;`: 24 bytes, alignment: 8 bytes
+`Range&lt;usize&gt;`: 24 bytes, alignment: 8 bytes
+</code></pre>
+<p>I.e. how a <code>Range&lt;usize&gt;</code> happens to be the same size as a <code>Filter&lt;Range&lt;usize&gt;</code>.
+The first thing to take note of is that this closure never captures anything, and so it'd make sense that its state is 0-byte sized:</p>
+<pre><code class="language-sh">$ cargo rustc --lib -- --test -Zprint-type-sizes
+# [...]
+`[closure]`: 0 bytes, alignment: 1 bytes
+</code></pre>
+<p>In fact, the compiler won't even bother generating an anonymous structure for it, and so our closure lives entirely in the code section of the executable: it has no associated data.<br />
+Effectively, it is just a plain function pointer:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let _f: fn(usize) -&gt; bool = |v: usize| v &gt;= 5 &amp;&amp; v &lt; 8; // compiles!
+<span class="boring">}
+</span></code></pre></pre>
+<p>That explains why our closure is 0 byte, but it certainly doesn't explain why a <code>Filter&lt;Range&lt;usize&gt;, [closure]&gt;</code> is the same size as a <code>Range&lt;usize&gt;</code>. Even if the closure itself is 0 byte, <code>Filter</code> still has has to hold a function pointer to the code portion of the closure, which is 8 bytes on a 64bit platform such as mine.<br />
+What are we missing?</p>
+<p>Consider the following code where we instantiate a <code>Filter</code> using an empty closure (i.e. an anonymous function):</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>#[cfg(feature = &quot;empty_closure&quot;)]
+fn empty_closure() {
+    let range = Range::new(10usize, 20, 1).into_iter();
+    assert_eq!(24, size_of_val(&amp;range));
+
+    let mut filter = range.filter_with(|&amp;v| v &gt;= 7 &amp;&amp; v &lt; 15);
+    assert_eq!(24, size_of_val(&amp;filter)); // 24 bytes!
+
+    let x = filter.next();
+    println!(&quot;{:?}&quot;, x);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>To understand what's actually going on here, we need to have a direct look at the assembly generated for our <code>Filter</code>'s <code>.next</code> method:</p>
+<pre><code class="language-sh">$ cargo asm --features empty_closure \
+            --asm-style att \
+            --build-type debug \
+            '&lt;chapter_1::Filter&lt;I,P&gt; as core::iter::traits::iterator::Iterator&gt;::next'
+</code></pre>
+<p>We'll specifically focus on the indirect call to the predicate (i.e. <code>(self.predicate)(&amp;v)</code>):</p>
+<pre><code class="language-assembly">;; (self.predicate)(&amp;v)
+leaq    64(%rsp), %rax
+movq    %rax, 80(%rsp)
+movq    32(%rsp), %rdi
+movq    80(%rsp), %rax
+movq    %rax, 88(%rsp)
+movq    88(%rsp), %rsi
+callq   closure_filters::empty_closure::{{closure}}
+movb    %al, 31(%rsp)
+</code></pre>
+<p>Don't worry too much about all these <code>mov</code> instructions for now, the only relevant piece of information is in fact written in plain english: <code>callq closure_filters::empty_closure::{{closure}}</code>.<br />
+The compiler has completely optimized out the indirect call through <code>self.predicate</code>: the address of the closure is hardcoded right there into the <code>.next</code> method!<br />
+We have monomorphization to thank for that, it generated a <code>.next</code> function specialized for <code>I = Range&lt;usize&gt;</code> and <code>P = [closure]</code>, where <code>[closure]</code> denotes the unique, anonymous type of our closure (remember, <em>each and every</em> closure gets its own anonymous type).<br />
+Since <code>self.predicate</code> is a <code>P</code>, and the compiler knows that <code>P</code> is nothing but a function pointer (i.e. <code>P: FnMut</code>), it therefore knows that it can eliminate the runtime dispatch in favor of what we're seeing here.</p>
+<p>What if our closure <em>did</em> capture some state, then?</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>#[cfg(feature = &quot;capturing_closure&quot;)]
+fn capturing_closure() {
+    let range = Range::new(10usize, 20, 1).into_iter();
+    assert_eq!(24, size_of_val(&amp;range));
+
+    let min = 7;
+    let max = 15;
+    let mut filter = range.filter_with(|&amp;v| v &gt;= min &amp;&amp; v &lt; max);
+    assert_eq!(40, size_of_val(&amp;filter)); // 40 bytes!
+
+    let x = filter.next();
+    println!(&quot;{:?}&quot;, x);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>We can see here that we capture two references to <code>usize</code>, i.e. 16 bytes:</p>
+<pre><code class="language-sh">$ cargo rustc --bin closure_filters --features capturing_closure -- -Zprint-type-sizes
+# [...]
+`[closure&lt;min:&amp;usize, max:&amp;usize&gt;]`: 16 bytes, alignment: 8 bytes
+</code></pre>
+<p>And so our <code>Filter&lt;Range&lt;usize&gt;, [closure&lt;&amp;usize,&amp;usize&gt;]</code> should be</p>
+<pre><code class="language-sh">sizeof(Range&lt;usize&gt;) + ## 24
+sizeof([closure&lt;&amp;usize,&amp;usize&gt;]) + ## 16
+sizeof(&amp;dyn FnMut(&amp;I::Item) -&gt; bool) ## 8
+</code></pre>
+<p>i.e. 50 bytes.<br />
+But of course, the same optimization applies:</p>
+<pre><code class="language-sh">$ cargo rustc --bin closure_filters --features capturing_closure -- -Zprint-type-sizes
+# [...]
+`Filter&lt;Range&lt;usize&gt;, [closure&lt;min:&amp;usize, max:&amp;usize&gt;]&gt;`: 40 bytes, alignment: 8 bytes
+</code></pre>
+<p>Once again monomorphization has eliminated the extra indirection:</p>
+<pre><code class="language-sh">$ cargo asm --features capturing_closure \
+            --asm-style att \
+            --build-type debug \
+            '&lt;chapter_1::Filter&lt;I,P&gt; as core::iter::traits::iterator::Iterator&gt;::next'
+</code></pre>
+<pre><code class="language-assembly">;; (self.predicate)(&amp;v)
+leaq    64(%rsp), %rax
+movq    %rax, 80(%rsp)
+movq    32(%rsp), %rax
+addq    $24, %rax       ;; 24 bytes offset from the start of `Filter&lt;I, P&gt;` is `self.predicate`,
+                        ;; i.e. the captured state, aka `self`.
+movq    80(%rsp), %rcx
+movq    %rcx, 88(%rsp)
+movq    88(%rsp), %rsi
+movq    %rax, %rdi
+callq   closure_filters::capturing_closure::{{closure}}
+movb    %al, 31(%rsp)
+</code></pre>
+<p>The attentive reader shall notice the two extra instructions this time: the compiler is properly setting up the stack so that our closure can access its state (which is made to point to <code>self.predicate</code>, using a 24 bytes offset).</p>
+<h3><a class="header" href="#12c-usual-complications" id="12c-usual-complications">1.2.c. Usual complications</a></h3>
+<p>When working in single-threaded environments, closures are usually a breathe to work with. The compiler gets to do its magic and you rarely seem to get into trouble, if at all.<br />
+Once we get into async code, though, some concepts that are usually mostly invisible will start becoming very apparent as Rust compile-time safeties start kicking in.</p>
+<p><strong>Higher Ranked Trait Bounds</strong></p>
+<p>The first complication that I want to mention has nothing to do with neither multi-threading nor asynchronous code, but you're bound to face it at one point or another if you start digging into any closure-heavy codebase (which is true of any async codebase, so..), so I'd rather mention it in passing.</p>
+<p>TL;DR, you <em>will</em> encounter this syntax at one point or another:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>// Notice the `for&lt;'a&gt;` in that trait bound.
+fn my_func&lt;F: for&lt;'a&gt; Fn(&amp;'a str) -&gt; bool&gt;(f: F) -&gt; bool { /* ... */ }
+<span class="boring">}
+</span></code></pre></pre>
+<p>which is meant to denote the higher-kindness of a lifetime trait bound, meaning that <code>&amp;str</code> cannot outlive <code>'a</code>, where <code>'a</code> is <em>any</em> lifetime, i.e. it is left unconstrained.</p>
+<p>While I would love to talk about Generic Associated Types, Higher Ranked Types/Lifetimes and all that fun at some point, now is nor the time nor the place.<br />
+For now, just keep in mind that this syntax exists, that you will most likely encouter it at some point, and that you'll find all the information you'll ever need in <a href="https://rust-lang.github.io/rfcs/0387-higher-ranked-trait-bounds.html">the original RFC</a> as well as in <a href="https://doc.rust-lang.org/nomicon/hrtb.html">the corresponding nomicon entry</a>.</p>
+<p><strong>Auto marker traits and inferred lifetimes</strong></p>
+<p>Always keep in mind that closures are just structures, and thus the usual rules regarding compound types and auto &amp; marker traits as well as lifetimes apply.<br />
+I.e. the lifetime and intrinsic properties of a state-machine built up from the combination of iterators and closures will be a direct result of both its explicitly <em>and</em> implicitly captured enviroments.</p>
+<p>Consider our <code>Filter</code> combinator, for example:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let min = 5;
+let max = 8;
+let mut it = Range::new(1usize, 20, 1).filter_with(|&amp;v| v &gt;= min &amp;&amp; v &lt; max);
+assert_eq!(Some(5), it.next());
+assert_eq!(Some(6), it.next());
+assert_eq!(Some(7), it.next());
+assert_eq!(None, it.next());
+<span class="boring">}
+</span></code></pre></pre>
+<p>In this case, the resulting state-machine's (<code>it</code>) lifetime is bounded by the lifetimes of <code>min</code> &amp; <code>max</code>.<br />
+Similarly, whether <code>it</code> can or cannot be moved between threads (i.e. <code>Send</code>) depends on whether <code>min</code> &amp; <code>max</code> can be sent between threads.</p>
+<p>Obviously, in a state-machine as simple as this one, this won't ever cause you any trouble.<br />
+In a massive asynchronous state-machine, built-up from many many parts (that may even cross module boundaries), and that will be arbitrarily moved back and forth between threads by some executor that you might or might not control, on the other hand... Let's just say that it can be easy to lose track of who requires what and for how long.</p>
+<p>But, hey, that's precisely why we're using Rust in the first place!<br />
+Compiler errors for these hard cases have become insanely good too, if quite verbose.</p>
+<h2><a class="header" href="#13-iterators-are-closures-are-iterators" id="13-iterators-are-closures-are-iterators">1.3. Iterators are closures are iterators</a></h2>
+<p><em>And now for the fun part.</em></p>
+<p>Let's recap the first two sections of this chapter, in as many sentences:</p>
+<ul>
+<li>Iterators are state-machines that are implemented using a structure to keep their state and a <code>.next()</code> method that takes a mutable reference to said state (<code>&amp;mut self</code>) in order to move the machine forward.</li>
+<li>Closures are state-machines that are implemented using a structure to hold their state (i.e. their captured environment) and a <code>call_once</code>/<code>call_mut</code>/<code>call</code> method that takes said state by move/mutable reference/shared reference (respectively) in order to drive the machine forward.</li>
+</ul>
+<p>If you're thinking to yourself that these two sound similar, that's because they are.<br />
+In this section we're going to have us a little fun by digressing into these similarities.</p>
+<h3><a class="header" href="#13a-iterators-as-closures" id="13a-iterators-as-closures">1.3.a. Iterators as closures</a></h3>
+<p>Consider our <code>Range</code> iterator from earlier:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct Range&lt;T&gt; {
+    cur: T,
+    end: T,
+    incr: T,
+}
+
+impl&lt;T&gt; Range&lt;T&gt; {
+    pub fn new(start: T, end: T, incr: T) -&gt; Self {
+        Self {
+            cur: start,
+            end,
+            incr,
+        }
+    }
+}
+
+impl&lt;T&gt; Iterator for Range&lt;T&gt;
+where
+    T: std::ops::AddAssign + PartialOrd + Clone,
+{
+    type Item = T;
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+        match &amp;self.cur {
+            v if *v &lt; self.end =&gt; {
+                let ret = self.cur.clone();
+                self.cur += self.incr.clone();
+                ret.into()
+            }
+            _ =&gt; None,
+        }
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>that we used like this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut j = 1;
+for i in Range::new(1usize, 4, 1) {
+    assert_eq!(j, i);
+    j += 1;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Could we express <code>Range</code> in terms of a closure instead?<br />
+Well of course we can, what's an iterator but a <code>FnMut() -&gt; Option&lt;T&gt;</code> closure, really?</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub mod range_fn {
+    pub fn new&lt;T&gt;(mut start: T, end: T, incr: T) -&gt; impl FnMut() -&gt; Option&lt;T&gt;
+    where
+        T: std::ops::AddAssign + PartialOrd + Clone,
+    {
+        move || {
+            if start &lt; end {
+                let ret = start.clone();
+                start += incr.clone();
+                return ret.into();
+            }
+            None
+        }
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>which we can basically use the same way as an iterator:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut f = range_fn::new(1, 4, 1);
+assert_eq!(Some(1), f());
+assert_eq!(Some(2), f());
+assert_eq!(Some(3), f());
+assert_eq!(None, f());
+<span class="boring">}
+</span></code></pre></pre>
+<p>But what about combinators, you say?</p>
+<h3><a class="header" href="#13b-closure-combinators" id="13b-closure-combinators">1.3.b. Closure combinators</a></h3>
+<p>Remember our <code>Range</code> iterator could be combined with a <code>Bounds</code> iterator, allowing us to express something like the following:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut it = Bounds::new(Range::new(1usize, 20, 1), 5, 8);
+assert_eq!(Some(5), it.next());
+assert_eq!(Some(6), it.next());
+assert_eq!(Some(7), it.next());
+assert_eq!(None, it.next());
+<span class="boring">}
+</span></code></pre></pre>
+<p>We can apply the same pattern to closures: by moving ownership of the wrappee inside the state of the wrapper, we can delegate the state-machinery from the wrapper and into the wrappee.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub mod bounds_fn {
+    pub fn new&lt;T, F&gt;(mut inner: F, min: T, max: T) -&gt; impl FnMut() -&gt; Option&lt;T&gt;
+    where
+        T: PartialOrd,
+        F: FnMut() -&gt; Option&lt;T&gt;,
+    {
+        move || loop {
+            match inner() {
+                Some(v) if v &gt;= min &amp;&amp; v &lt; max =&gt; return v.into(),
+                Some(_) =&gt; {}
+                None =&gt; return None,
+            }
+        }
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Again, using our closure combinator is pretty similar to using our iterator combinator:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut f = bounds_fn::new(range_fn::new(1usize, 20, 1), 5, 8);
+assert_eq!(Some(5), f());
+assert_eq!(Some(6), f());
+assert_eq!(Some(7), f());
+assert_eq!(None, f());
+<span class="boring">}
+</span></code></pre></pre>
+<p>And, as we'd expect based on everything we've learned so far, what gets generated here is pretty much the same thing, both from a memory representation and execution model standpoints, as what got generated for the equivalent iterator combinator.</p>
+<pre><code class="language-sh">$ cargo rustc --lib -- --test -Zprint-type-sizes
+# [...]
+## Iterator combinator
+`Bounds&lt;Range&lt;usize&gt;, usize&gt;`: 40 bytes, alignment: 8 bytes
+## Closure combinator
+`[closure&lt;f:[closure&lt;start:usize, end:usize, incr:usize&gt;], min:usize, max:usize&gt;]`: 40 bytes, alignment: 8 bytes
+</code></pre>
+<p>What about extensions, though? Those were <em>the</em> true killer feature of iterator combinators!</p>
+<h3><a class="header" href="#13c-closure-extensions" id="13c-closure-extensions">1.3.c. Closure extensions</a></h3>
+<p>Remember how we were able to do this?</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut it = Range::new(1usize, 20, 1).bounds(1, 20).bounds(3, 13).bounds(5, 8);
+assert_eq!(Some(5), it.next());
+assert_eq!(Some(6), it.next());
+assert_eq!(Some(7), it.next());
+assert_eq!(None, it.next());
+<span class="boring">}
+</span></code></pre></pre>
+<p>Well closures are a trait too, aren't they? Surely we can extend it!</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>trait BoundsExtFn&lt;'a, T&gt;: FnMut() -&gt; Option&lt;T&gt;
+where
+    Self: 'a + Sized,
+    T: 'a + std::cmp::PartialOrd,
+{
+    fn bounds(self, min: T, max: T) -&gt; Box&lt;dyn FnMut() -&gt; Option&lt;T&gt; + 'a&gt; {
+        Box::new(bounds_fn::new(self, min, max))
+    }
+}
+
+impl&lt;'a, F, T&gt; BoundsExtFn&lt;'a, T&gt; for F
+where
+    F: 'a + FnMut() -&gt; Option&lt;T&gt;,
+    T: 'a + std::cmp::PartialOrd,
+{
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Ta-daaaa!</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut f = range_fn::new(1usize, 20, 1).bounds(1, 20).bounds(3, 13).bounds(5, 8);
+assert_eq!(Some(5), f());
+assert_eq!(Some(6), f());
+assert_eq!(Some(7), f());
+assert_eq!(None, f());
+<span class="boring">}
+</span></code></pre></pre>
+<p>Ok, that's not really &quot;ta-da&quot; worthy, actually. I lied.</p>
+<p>While what we've created here does indeed provide similar functional behavior as our hand-crafted combinator defined above, it has a <em>completely different</em> memory representation and execution model (not to mention that the code itself looks way more complex).<br />
+And by different, I actually mean <em>worse in every way</em>.<br />
+We've just brought heap allocations and pointer indirections upon ourselves. Oh noes.</p>
+<pre><code class="language-sh">$ cargo rustc --lib -- --test -Zprint-type-sizes
+# [...]
+`[closure&lt;f:Box&lt;dyn FnMut() -&gt; Option&lt;usize&gt;&gt;, min:usize, max:usize&gt;]`: 32 bytes, alignment: 8 bytes
+</code></pre>
+<p>All of our issues stem from the use of a <code>Box</code> there (<code>Box&lt;dyn FnMut() -&gt; Option&lt;T&gt; + 'a&gt;</code>), which begs the question: why did we reach for a <code>Box</code> in the first place?</p>
+<p>The reason is actually a limitation in Rust's type system, namely the lack of Generic Associated Types, which prevents us from expressing a trait method that returns a <code>impl FnMut() -&gt; Option&lt;T&gt;</code>, i.e. an unconstrained generic type (GATs are in fact a limited form of HKTs which, once again, are a topic for another day).</p>
+<p>But wait a minute, why didn't we face this issue back when we implemented <code>BoundsExt</code> for iterators?</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub trait BoundsExt: Iterator
+where
+    Self: Sized,
+{
+    fn bounds&lt;T&gt;(self, min: T, max: T) -&gt; Bounds&lt;Self, T&gt; {
+        Bounds::new(self, min, max)
+    }
+}
+
+impl&lt;I: Iterator&gt; BoundsExt for I {}
+<span class="boring">}
+</span></code></pre></pre>
+<p>That right here is the magical part: <code>Bounds&lt;Self, T&gt;</code>.<br />
+I.e. we never had the problem before because we were actually capable of referring to a <code>Bounds&lt;Self, T&gt;</code> by its name.</p>
+<p>Unfortunately, one of the first thing we've learned about closures is that we cannot name them; they're all different, and they're all anonymous. Thus we <em>have</em> to return a generic type here, and it certainly cannot be constrained by the caller, since they couldn't possibly name the type of a closure that doesn't even yet exist!</p>
+<p>Therefore, what we're left to work with is an unconstrained generic type to return, and an unfortunate solution to the problem: boxing the return value into a trait object, which is exactly what we did there.<br />
+Of course, in doing so we've also sacrificed any chance at monomorphization and all the good things that can come out of it: inlining, code elimination, recursive optimizations, etc...</p>
+<h3><a class="header" href="#13d-back-and-forth" id="13d-back-and-forth">1.3.d. Back and forth</a></h3>
+<p>We've shown that we can express iterators as closures and vice-versa, thus we should be able to freely turn one into the other and back again on the fly, shouldn't we?</p>
+<p>Turning an iterator into a closure is just a matter of implementing <code>FnMut</code> for <code>I: Iterator</code>, where the implementation does nothing but delegate the call to <code>Iterator::next</code>:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub fn iter_to_closure&lt;I: Iterator&gt;(inner: I) -&gt; impl FnMut() -&gt; Option&lt;I::Item&gt; {
+    // We cannot implement Fn* traits directly on `I: Iterator` because of
+    // coherence.
+    struct Iter&lt;I&gt;(I);
+
+    impl&lt;I&gt; FnOnce&lt;()&gt; for Iter&lt;I&gt;
+    where
+        I: Iterator,
+    {
+        type Output = Option&lt;I::Item&gt;;
+
+        extern &quot;rust-call&quot; fn call_once(mut self, _args: ()) -&gt; Self::Output {
+            Iterator::next(&amp;mut self.0)
+        }
+    }
+    impl&lt;I&gt; FnMut&lt;()&gt; for Iter&lt;I&gt;
+    where
+        I: Iterator,
+    {
+        extern &quot;rust-call&quot; fn call_mut(&amp;mut self, _args: ()) -&gt; Self::Output {
+            Iterator::next(&amp;mut self.0)
+        }
+    }
+
+    Iter(inner)
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Going the other way is even more straightforward:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub fn closure_to_iter&lt;T, F: FnMut() -&gt; Option&lt;T&gt;&gt;(inner: F) -&gt; impl Iterator&lt;Item = T&gt; {
+    struct Iter&lt;F&gt;(F);
+
+    impl&lt;F, T&gt; Iterator for Iter&lt;F&gt;
+    where
+        F: FnMut() -&gt; Option&lt;T&gt;,
+    {
+        type Item = T;
+
+        fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+            self.0()
+        }
+    }
+
+    Iter(inner)
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>And in fact, it seems so natural to want to express an iterator as a closure that libcore provides the exact same code via <a href="https://doc.rust-lang.org/core/iter/fn.from_fn.html"><code>core::iter::from_fn</code></a>.</p>
+<p>And, voila! From iterators to closures and back again.<br />
+No magic tricks, no hidden allocs, no nothing.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut it = Range::new(1usize, 20, 1).into_iter().bounds(5, 14);
+assert_eq!(Some(5), it.next());
+assert_eq!(Some(6), it.next());
+assert_eq!(Some(7), it.next());
+
+let mut f = iter_to_closure(it);
+assert_eq!(Some(8), f());
+assert_eq!(Some(9), f());
+assert_eq!(Some(10), f());
+
+let mut it = closure_to_iter(f);
+assert_eq!(Some(11), it.next());
+assert_eq!(Some(12), it.next());
+assert_eq!(Some(13), it.next());
+
+assert_eq!(None, it.next());
+<span class="boring">}
+</span></code></pre></pre>
+<h2><a class="header" href="#14-the-case-for-asynchronous-rust" id="14-the-case-for-asynchronous-rust">1.4. The case for asynchronous Rust</a></h2>
+<p>And with that, our little demystifying tour of iterators and closures comes to an end.<br />
+So, what was the point of all of this? What do iterators and closures have to do with anything?</p>
+<p>Actually, beyond iterators and closures, what we've really looked at during this chapter are the various ways of expressing state-machines using Rust's native tools.<br />
+Coincidentally, a lot (most?) of idiomatic Rust code comes down to just that: building up complex state machines by combining iterators and closures, and then polling these state-machines at the edge of the software, where errors will be dealt with properly.</p>
+<p>What's with asynchronous Rust, then? What can we express in async Rust that we couldn't convey with these tools? The answer is multiplexing.. kind of.</p>
+<h3><a class="header" href="#14a-what-are-we-trying-to-fix" id="14a-what-are-we-trying-to-fix">1.4.a. What are we trying to fix?</a></h3>
+<p>A standard iterator will hold an entire OS thread from the time it's polled and until it yields its next value. Whether this iterator actually does something useful with that OS thread is irrelevant.<br />
+Consider this over-used example of an iterator that sends a packet to a station on Mars when it gets polled, and yields a welcoming message when an answer comes back from the network:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct PingMars;
+
+impl Iterator for PingMars {
+    type Item = &amp;'static str;
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+        fn ping_mars() -&gt; &amp;'static str {
+            use std::{thread::sleep, time::Duration};
+            sleep(Duration::from_secs(2)); // simulating network
+            &quot;Hello from Mars!&quot;
+        }
+
+        ping_mars().into()
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Once we start polling it, this iterator will keep hold of the underlying OS thread for as long as it takes for Mars to respond.<br />
+Obviously, in this case, the overwhelming majority of the CPU time will be spent idling, waiting for data from the network.</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>let mut mars_com = PingMars;
+for msg in mars_com { // Blocking an entire OS thread :(
+    println!(&quot;received message from Mars: {}!&quot;, msg);
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>That's the textbook case of synchronous/blocking I/O, which has been thrown around and around for the last decades.</p>
+<p>But the issue isn't really confined to I/O, is it?<br />
+What about a program that has to sleep, e.g. to wait for an external piece of hardware to get ready?<br />
+What about a program that is stuck waiting for an intra-program signal, e.g. a channel or a mutex?</p>
+<p>It seems that what we're getting at is that the issue isn't specific to I/O, but rather generalizes to any non-CPU intensive code.<br />
+Actually, I'd argue that it encompasses even more than &quot;just&quot; non-CPU intensive code.</p>
+<p>What if we had a state-machine that needed to do some CPU-heavy computation on every poll, but we'd still very much like for it <em>not</em> to hijack an entire OS thread until its next yield; i.e. we'd like to be able to pause the computation of a value at arbitrary points, so that another state-machine could make some progress of its own in the meanwhile.<br />
+Heck, what if we were running on some kind of embedded platform that doesn't provide OS threads in the first place?</p>
+<p>Consider this (ridiculously bad) Fibonacci iterator:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub struct Fibonacci {
+    cur: usize,
+    until: usize,
+}
+
+impl Fibonacci {
+    pub fn new(until: usize) -&gt; Self {
+        Self { cur: 0, until }
+    }
+}
+
+impl Iterator for Fibonacci {
+    type Item = (usize, usize);
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+        if self.cur &gt; self.until {
+            return None;
+        }
+        let n = self.cur;
+        self.cur += 1;
+
+        fn fib(n: usize) -&gt; usize {
+            match n {
+                v if v == 0 =&gt; 0,
+                v if v == 1 =&gt; 1,
+                v =&gt; fib(v - 1) + fib(v - 2),
+            }
+        }
+        (n, fib(n)).into()
+    }
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>For big enough values of <code>n</code>, every poll is going to take so much CPU-time to compute, maybe we'd rather let some other state-machine progress from time to time, hm?<br />
+(Yes, Fibonacci is a very contrived example. Yes, memoization would be a much better solution in this case. Bear with me.)</p>
+<p>The real issue here is neither blocking I/O, or non-CPU intensive code, or anything specific like that.<br />
+The real issue simply is that we need a way to express <em>multiplexing</em> as part of our state-machines, and more specifically as part of our polling mechanism.</p>
+<p>Question: <em>Haven't we fixed that issue already, though? Like decades ago?</em><br />
+That's exactly what OS threads are for, multiplexing N programs onto M physical threads, and we've had those for who-knows how long.<br />
+In fact they work so well that you can spawn millions of them without breaking a sweat on modern hardware.</p>
+<p>Answer: <em>Yes, there is in fact nothing that you could express with Futures/Streams that you wouldn't be able to convey with Closures/Iterators and a bunch of good ol' OS threads.</em><br />
+In fact, both Rust's stdlib and ecosystem offer very powerful tools for working with OS threads (<a href="https://github.com/crossbeam-rs/crossbeam"><code>crossbeam</code></a>) and multi-threaded iterators (<a href="https://github.com/rayon-rs/rayon"><code>rayon</code></a>); these tools should most likely always be your first weapon of choice, unless you fall into either of those two categories:</p>
+<ul>
+<li>You have hard performance constraints.<br />
+Async code can achieve A) much better performance and B) more efficient CPU usage than OS threads thanks to the lack of context-switching overhead.<br />
+At large enough scale, this will more than likely manifests itself as A) smoother tail latencies and B) much cheaper CPU bills.</li>
+<li>You have hard environment constraints.<br />
+What if your platform simply doesn't provide OS threads? What if it does but you cannot use them for some reason (e.g. some determinism contraints)?</li>
+</ul>
+<p>Of course, those gains don't come for free.<br />
+As we'll see in the rest of this book, asynchronous Rust ships with a metric ton of added complexity, a tradeoff that may or may not be worth it depending on your constraints.</p>
+<h3><a class="header" href="#14b-howd-we-go-about-fixing-it" id="14b-howd-we-go-about-fixing-it">1.4.b. How'd we go about fixing it?</a></h3>
+<p>Let's take a minute to think about how'd we go about fixing the lack of multiplexing capability of closures and iterators.</p>
+<p>In the case of the <code>PingMars</code> iterator, the solution is obvious: we would need to make use of non-blocking I/O so that we could give back control of the OS thread to the poller in case the underlying network device isn't ready yet.<br />
+Somehow, we'll also need to find a way to notify the poller when the underlying device finally turns ready again, otherwise how could they know when they should start polling again?</p>
+<p>For the <code>Fibonacci</code> example, we'd need a way to give control of the thread back to the poller in case the current value is taking too long to compute (for an arbitrary definition of &quot;too long&quot;).<br />
+Interestingly, we don't need to ever notify the poller in this case: they're free to start polling again whenever they want, the iterator only released the OS thread for the sake of politeness anyway; i.e. it's always ready.<br />
+What we're definitely going to need, though, is a way to know exactly where we stopped in the computation back when we released the OS thread, so that we can continue from that point on when the polling restarts.</p>
+<p>We could go on and on, but already a pattern starts emerging here:</p>
+<ul>
+<li>The state-machine must be able to give back control of the OS thread to the poller, even from the middle of a polling cycle.</li>
+<li>The state-machine must have a way of notifying the poller when it's a good time to start polling again.</li>
+<li>The state-machine must keep track of the progress made during the last polling cycle, so that it can start again from there.</li>
+</ul>
+<p>Say we were to take the definition of Iterator and encode those constraints in it, we'd probably end up with something like this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+<span class="boring">#![allow(unused_variables)]
+</span><span class="boring">fn main() {
+</span>pub enum Poll&lt;T&gt; {
+    Ready(Option&lt;T&gt;),
+    NotReady,
+}
+
+pub struct Notifier {/* ... */}
+
+pub trait MultiplexedIterator {
+    type Item;
+
+    /// Advances the iterator and returns the next value as a `Poll::Ready(T)`
+    /// if it's ready to be yielded, otherwise returns `Poll::NotReady`.
+    /// The poller is responsible for polling again and again, until an actual
+    /// value can be returned.
+    ///
+    /// Returns `Poll::Ready(None)` when iteration is finished.
+    /// Individual iterator implementations must notify the poller when it can
+    /// poll again after having returned `Poll::NotReady`.
+    fn next(&amp;mut self, n: Notifier) -&gt; Poll&lt;Self::Item&gt;;
+}
+<span class="boring">}
+</span></code></pre></pre>
+<p>Guess what, we've essentially just reinvented <code>Stream</code> (..almost)!</p>
+<p>When you take Closures and Iterators, and engineer multiplexing-support into them, what you get back are Futures and Streams.</p>
+<h3><a class="header" href="#14c-conclusion" id="14c-conclusion">1.4.c. Conclusion</a></h3>
+<p><strong>Asynchronous Rust is about expressing state-machines that can be multiplexed onto a single OS thread</strong>.</p>
+<p>The main reasons to do so are A) better overall performance and B) environment constraints, at the cost of a massive increase in complexity, both from a usage and implementation standpoints.</p>
+<p><code>Future</code>s and <code>Stream</code>s are logical extensions to closures and iterators, giving them the ability to be multiplexed onto a single OS thread.<br />
+As we'll see, the four of them all share many of the same properties and design principles, which is why we've spent this entire chapter covering every last details of closures and iterators in the first place.</p>
+<p>Iterators and closures are, as I like to say, the gateway drugs to Futures and Streams.<br />
+In fact, as we'll see later in this book, these four can (and will be) all be expressed in terms of the mother of all state-machines: Generators.</p>
+<h1><a class="header" href="#2-chapter-ii" id="2-chapter-ii">2. Chapter II</a></h1>
+<p>TODO</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+        
+        
+        <script type="text/javascript">
+            window.playpen_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+        
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+        
+        
+
+    </body>
+</html>
