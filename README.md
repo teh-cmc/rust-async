@@ -168,7 +168,7 @@ There really isn't any kind of magic going on here: no hidden allocations, no co
 
 ### 1.1.a. Combinators
 
-Iterators can be defined in terms of other iterators, making it possible to _combine_ (hence "iterator combinators") them into arbitrarily complex state-machines by wrapping iterators into iterators into iterators.. and so on and so forth.
+Iterators can be defined in terms of other iterators, making it possible to _combine_ (hence "iterator combinators") them into arbitrarily complex state-machines by wrapping iterators into iterators into iterators... and so on and so forth.
 
 Here's a `Bounds` combinator that makes sure our `Range` never yields results that are out of bounds:
 ```rust,no_run
@@ -247,7 +247,7 @@ Yikes. Enter extensions.
 
 ## 1.1.b. Extensions
 
-Extension traits allow us to define some behavior and implement it for both local and external types (provided you respect trait coherence rules.. a topic for another day).  
+Extension traits allow us to define some behavior and implement it for both local and external types (provided you respect trait coherence rules... a topic for another day).  
 They come in very handy in the case of iterator combinators, as they allow us to express our compound state-machines using something akin to the familiar builder pattern.
 
 Here we define a `BoundsExt` trait and provide a default implementation for everything that is an `Iterator` (provided that their `Item`s are `PartialOrd`, of course!):
@@ -291,13 +291,13 @@ Still, if we had to implement an iterator combinator from scratch everytime we w
 
 While iterators are pretty straightforward both from a usage and an implementation standpoint, closures are anything but.  
 In fact, I'd argue they're one of the most complex pieces of "standard" synchronous Rust.  
-Their very expressive nature, thanks to a lot of magical sugar exposed by the compiler, make them a prime tool to push the type system into very complex corners, whether voluntarily.. or not.
+Their very expressive nature, thanks to a lot of magical sugar exposed by the compiler, make them a prime tool to push the type system into very complex corners, whether voluntarily... or not.
 
 Closures also happen to be the cornerstone of any serious asynchronous codebase, where their incidental complexity tends to skyrocket as a multitude of issues specific to asynchronous & multi-threaded code join in on the party.
 
 ### 1.2.a. A better `Bounds`
 
-We'll kick off this section by turning our `Bounds` filter into a filter of.. well, anything, really:
+We'll kick off this section by turning our `Bounds` filter into a filter of... well, anything, really:
 ```rust
 pub struct Filter<I, P> {
     inner: I,
@@ -354,7 +354,7 @@ assert_eq!(None, it.next());
 ```
 Yep, that does it.
 
-So that's nice and all but.. how does our final state-machine ends up being implemented?
+So that's nice and all but... how does our final state-machine ends up being implemented?
 ```sh
 $ cargo rustc --lib -- --test -Zprint-type-sizes
 # [...]
@@ -363,7 +363,7 @@ $ cargo rustc --lib -- --test -Zprint-type-sizes
 ```
 Wait, wat? How come a monomorphized `Filter<Range<usize>, <[closure]>>` is the same size as a `Range<usize>`?
 
-The only way this is possible is if storing our closure costs a whopping 0 byte which.. doesn't seem plausible?  
+The only way this is possible is if storing our closure costs a whopping 0 byte which... doesn't seem plausible?  
 Let's take a minute to try and understand what's going on here.
 
 ### 1.2.b. What's a closure, anyway?
@@ -489,7 +489,7 @@ It doesn't matter that the second closure moves `a` & `b` into its state (well i
 What matters is how the closure interacts with its state when it gets called.  
 In the example above, that interaction is just a read through a reference, and so a shared reference to the state (i.e. `&self`) is enough to perform the call: the compiler makes sure that this closure is `Fn`.
 
-Now if you were to do this on the other hand..:
+Now if you were to do this on the other hand...:
 ```rust
 struct MyNonCopyType(i32);
 let a = MyNonCopyType(42);
@@ -514,11 +514,11 @@ fn call_mut(&mut self, args: Args) -> Self::Output // `&mut self`
 Of course, if our `FnMut` closure can be called N times, then it would certainly make sense that we should be able to call it only once. Indeed, `FnOnce` is a supertrait of `FnMut` (hence `FnMut<Args>: FnOnce<Args>`).  
 This is easier to visualize with an example:
 ```rust
-fn run_once<F>(f: F) -> i32 // `f` isn't even marked as `mut`..
+fn run_once<F>(f: F) -> i32 // `f` isn't even marked as `mut`...
 where
     F: FnOnce() -> i32,
 {
-    f() // ..but `self` is really `&mut self`, because tricks!
+    f() // ...but `self` is really `&mut self`, because tricks!
 }
 
 fn run_mut<F>(mut f: F) -> i32
@@ -1125,7 +1125,7 @@ So, what was the point of all of this? What do iterators and closures have to do
 Actually, beyond iterators and closures, what we've really looked at during this chapter are the various ways of expressing state-machines using Rust's native tools.  
 Coincidentally, a lot (most?) of idiomatic Rust code comes down to just that: building up complex state machines by combining iterators and closures, and then polling these state-machines at the edge of the software, where errors will be dealt with properly.  
 
-What's with asynchronous Rust, then? What can we express in async Rust that we couldn't convey with these tools? The answer is multiplexing.. kind of.
+What's with asynchronous Rust, then? What can we express in async Rust that we couldn't convey with these tools? The answer is multiplexing... kind of.
 
 ### 1.4.a. What are we trying to fix?
 
